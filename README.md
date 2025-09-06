@@ -76,8 +76,12 @@ Output: Recognized text from audio.
 
 ```bash
 cd cpp-tests
-g++ llama_test.cpp -o llama_test -L/path/to/llama.cpp/lib
-./llama_test "Hello, who are you?"
+	./llama-cli \
+	  -m /usr/src/llama.cpp/build/bin/tinyllama-1.1b-chat-v1.0.Q4_K_S.gguf\
+	  --temp 0.6 \
+	  --top-k 20 \
+	  --top-p 0.5 \
+	  --repeat-penalty 1.2
 ```
 Output: AI-generated response.
 
@@ -141,4 +145,43 @@ Each AI model follows its respective original license:
 | **Vosk**   | [https://alphacephei.com/vosk/](https://alphacephei.com/vosk/)             | Apache 2.0  |
 | **TinyLLaMA** | [https://github.com/ggerganov/llama.cpp](https://github.com/ggerganov/llama.cpp) | MIT         |
 | **Piper**  | [https://github.com/rhasspy/piper](https://github.com/rhasspy/piper)       | MIT         |
+
+
+## Contact
+
+For questions or collaboration requests, please open a GitHub issue or fork the project.
+
+
+---
+
+### 🔧 Optional Additions
+
+If you want, I can also provide:
+
+- `.gitignore` for C++/Java/Android projects  
+- `LICENSE` file (MIT)  
+- `CONTRIBUTING.md` template  
+- Badges (for GitHub Actions, License, etc.)
+
+Let me know if you'd like to include those.
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
