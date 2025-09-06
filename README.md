@@ -67,8 +67,9 @@ offline-voice-ai/
 
 ```bash
 cd cpp-tests
-g++ vosk_test.cpp -o vosk_test -lvosk
-./vosk_test sample.wav
+g++ -std=c++17 -lstdc++ -Wall  -I/usr/src/vosk_stt/include  -c main.cpp -o main.o
+g++ -std=c++17  -lstdc++ -o vosks main.o  -L/usr/src/vosk_stt/lib  -lvosk -Wl,--copy-dt-needed-entries -Wl,-rpath=/usr/src/vosk_stt/lib -lm -lpthread -ldl  /usr/lib/x86_64-linux-gnu/libpthread.a
+
 ```
 Output: Recognized text from audio.
 
@@ -89,8 +90,10 @@ Output: AI-generated response.
 
 ```bash
 cd cpp-tests
-g++ piper_test.cpp -o piper_test -lpiper
-./piper_test "Hello, I am your voice assistant"
+g++ -std=c++17 -lstdc++ -Wall  -I/usr/src/piper_tts/cpp -I/usr/src/piper_tts/pi/include  -c main.cpp -o main.o
+g++ -std=c++17 -lstdc++ -Wall  -I/usr/src/piper_tts/cpp -I/usr/src/piper_tts/pi/include  -c piper.cpp -o piper.o
+g++ -std=c++17  -lstdc++ -o pipers main.o piper.o -L/usr/src/piper_tts/pi/lib  -lonnxruntime -lpiper_phonemize -lespeak-ng -Wl,--copy-dt-needed-entries -Wl,-rpath=/usr/src/piper_tts/pi/lib -lm -lpthread  /usr/lib/x86_64-linux-gnu/libpthread.a
+
 ```
 Output: reply.wav audio file with synthesized speech.
 
