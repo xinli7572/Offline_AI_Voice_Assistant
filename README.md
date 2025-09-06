@@ -1,7 +1,7 @@
 
 
-#  Offline AI Voice Assistant Prototype (Java springboot/Android --> C++ Backend)
-
+#  Offline AI Voice Assistant Prototype 
+#  Java springboot/Android --> C++ Backend
 
 
 https://github.com/user-attachments/assets/8470d2bd-a5ef-403f-8369-0f5a830b5a53
