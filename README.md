@@ -1,6 +1,6 @@
 
 
-# 🧠 Offline AI Voice Assistant Prototype (C++ Backend + Java Web + Android)
+#  Offline AI Voice Assistant Prototype (Java springboot/Android --> C++ Backend)
 
 
 
