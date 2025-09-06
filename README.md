@@ -147,7 +147,7 @@ Each AI model follows its respective original license:
 |------------|------------------------------------------------|-------------|
 | **Vosk**   | [https://github.com/alphacep/vosk-api/releases](https://github.com/alphacep/vosk-api/releases)             | Apache 2.0  |
 | **TinyLLaMA** | [https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF](https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF) | MIT         |
-| **Piper**  | [https://github.com/rhasspy/piper](https://github.com/rhasspy/piper)       | MIT         |
+| **Piper**  | [https://github.com/rhasspy/piper?tab=readme-ov-file](https://github.com/rhasspy/piper?tab=readme-ov-file)       | MIT         |
 
 
 ## Contact
