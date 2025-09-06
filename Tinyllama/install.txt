@@ -1,0 +1,41 @@
+
+=====================================================
+install
+=====================================================
+	apt-get update
+	apt install build-essential
+	#gcc --version
+	#gcc (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0
+	apt-get install git
+	apt install libcurl4-openssl-dev
+
+	wget https://github.com/Kitware/CMake/releases/download/v3.25.3/cmake-3.25.3-linux-x86_64.sh
+	chmod +x cmake-3.25.3-linux-x86_64.sh
+	sudo ./cmake-3.25.3-linux-x86_64.sh --skip-license --prefix=/usr/local
+	#cmake --version
+	#cmake version 3.25.3
+
+	git clone https://github.com/ggerganov/llama.cpp
+	cd llama.cpp
+
+	#unzip llama.cpp-master.zip
+	#cd llama.cpp-master
+
+	mkdir build
+	cd build
+	export PATH=/usr/local/bin:$PATH
+	cmake .. -DGGML_AVX2=ON  -DGGML_AVX512=ON  -DGGML_FMA=OFF -DGGML_ARM=OFF
+	make -j$(nproc)
+
+=====================================================
+download£º
+https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF
+
+	./llama-cli \
+	  -m /usr/src/llama.cpp/build/bin/tinyllama-1.1b-chat-v1.0.Q4_K_S.gguf\
+	  --temp 0.6 \
+	  --top-k 20 \
+	  --top-p 0.5 \
+	  --repeat-penalty 1.2
+
+=====================================================

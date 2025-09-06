@@ -1,0 +1,61 @@
+
+模型下载地址
+========================================
+https://github.com/rhasspy/piper?tab=readme-ov-file
+
+https://github.com/rhasspy/piper/blob/master/VOICES.md
+========================================
+
+cd /usr/src/
+sudo apt update
+sudo apt-get install build-essential
+sudo apt install python3-venv python3-pip git
+
+cd /usr/src/
+sudo apt remove cmake
+wget https://github.com/Kitware/CMake/releases/download/v3.25.3/cmake-3.25.3-linux-x86_64.sh
+chmod +x cmake-3.25.3-linux-x86_64.sh
+sudo ./cmake-3.25.3-linux-x86_64.sh --skip-license --prefix=/usr/local
+
+unzip piper-master.zip
+cd /usr/src/piper-master/lib
+mkdir x86_64 #uname -m
+cd x86_64
+cp /usr/src/piper-phonemize-master.zip . 
+unzip piper-phonemize-master.zip
+
+cd /usr/src/piper-master
+cmake -Bbuild -DCMAKE_INSTALL_PREFIX=install
+cmake --build build --config Release
+cd build && ctest --config Release
+cd ..
+cmake --install build
+
+#=======================================
+# test
+#=======================================
+cd /usr/src/p/piper-master/install
+echo 'Welcome to the world of speech synthesis!' | \
+  ./piper --model en_US-lessac-medium.onnx --output_file welcome2.wav
+
+echo 'This sentence is spoken first. This sentence is synthesized while the first sentence is spoken.' | \
+  ./piper --model en_US-lessac-medium.onnx --output-raw | \
+  aplay -r 22050 -f S16_LE -t raw -
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
