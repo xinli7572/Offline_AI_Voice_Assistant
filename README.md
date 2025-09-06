@@ -146,7 +146,7 @@ Each AI model follows its respective original license:
 | Model      | Source                                         | License     |
 |------------|------------------------------------------------|-------------|
 | **Vosk**   | [https://alphacephei.com/vosk/](https://alphacephei.com/vosk/)             | Apache 2.0  |
-| **TinyLLaMA** | [https://github.com/ggerganov/llama.cpp](https://github.com/ggerganov/llama.cpp) | MIT         |
+| **TinyLLaMA** | [https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF](https://huggingface.co/TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF) | MIT         |
 | **Piper**  | [https://github.com/rhasspy/piper](https://github.com/rhasspy/piper)       | MIT         |
 
 
