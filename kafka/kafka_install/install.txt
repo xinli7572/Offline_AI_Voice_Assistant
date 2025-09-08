@@ -1,0 +1,27 @@
+
+
+
+
+
+https://kafka.apache.org/downloads
+
+==============================================
+install
+==============================================
+wget https://archive.apache.org/dist/kafka/2.8.0/kafka_2.12-2.8.0.tgz
+
+
+sudo apt update
+sudo apt install openjdk-8-jdk
+java -version
+
+tar -xvzf kafka_2.12-2.8.0.tgz
+cd kafka_2.12-2.8.0
+
+==============================================
+start
+==============================================
+Zookeeper£º	bin/zookeeper-server-start.sh config/zookeeper.properties
+server: 	bin/kafka-server-start.sh config/server.properties
+
+==============================================

@@ -1,0 +1,323 @@
+
+
+
+
+sudo apt update
+sudo apt install -y build-essential libssl-dev libsasl2-dev libzstd-dev libz-dev cmake
+
+git clone https://github.com/confluentinc/librdkafka.git
+cd librdkafka
+
+
+./configure --prefix=/usr/src/so
+make -j$(nproc)
+sudo make install
+
+
+librdkafka.so (libc6,x86-64) => /usr/src/so/lib/librdkafka.so
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <iostream>
+#include <librdkafka/rdkafkacpp.h>
+
+int main() {
+    std::string brokers = "localhost:9092";
+    std::string topic = "test";
+
+    std::string errstr;
+
+    RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
+    conf->set("bootstrap.servers", brokers, errstr);
+
+    RdKafka::Producer *producer = RdKafka::Producer::create(conf, errstr);
+    if (!producer) {
+        std::cerr << "Failed to create producer: " << errstr << std::endl;
+        return 1;
+    }
+
+    std::string message = "Hello, Kafka from C++!";
+
+    RdKafka::ErrorCode resp = producer->produce(
+        topic, RdKafka::Topic::PARTITION_UA,
+        RdKafka::Producer::RK_MSG_COPY /* Copy payload */,
+        const_cast<char *>(message.c_str()), message.size(),
+        nullptr, nullptr);
+
+    if (resp != RdKafka::ERR_NO_ERROR)
+        std::cerr << "Produce failed: " << RdKafka::err2str(resp) << std::endl;
+    else
+        std::cout << "Message sent: " << message << std::endl;
+
+    producer->flush(5000); // 等待所有消息发送完毕
+
+    delete producer;
+    delete conf;
+
+    return 0;
+}
+
+
+g++ producer.cpp -o producer -lrdkafka++
+g++ producer.cpp -o producer -lrdkafka++ -lrdkafka -lpthread -lz -lssl -lcrypto -lsasl2
+
+
+
+g++ main.cpp -o producer -lrdkafka++
+
+=======================================
+
+#include <iostream>
+#include <csignal>
+#include <librdkafka/rdkafkacpp.h>
+
+static bool run = true;
+
+void signal_handler(int sig) {
+    run = false;
+}
+
+class ExampleEventCb : public RdKafka::EventCb {
+public:
+    void event_cb(RdKafka::Event &event) override {
+        switch (event.type()) {
+            case RdKafka::Event::EVENT_ERROR:
+                std::cerr << "ERROR (" << RdKafka::err2str(event.err()) << "): " << event.str() << std::endl;
+                if (event.err() == RdKafka::ERR__ALL_BROKERS_DOWN) {
+                    run = false;
+                }
+                break;
+            case RdKafka::Event::EVENT_STATS:
+                std::cout << "STATS: " << event.str() << std::endl;
+                break;
+            default:
+                std::cout << "EVENT: " << event.str() << std::endl;
+                break;
+        }
+    }
+};
+
+int main() {
+    std::string brokers = "localhost:9092";
+    std::string topic = "test";
+    std::string group_id = "cpp_consumer_group";
+
+    std::string errstr;
+
+    // 设置全局配置
+    RdKafka::Conf *conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
+    conf->set("bootstrap.servers", brokers, errstr);
+    conf->set("group.id", group_id, errstr);
+    conf->set("enable.partition.eof", "true", errstr);
+
+    // 设置事件回调（可选）
+    ExampleEventCb ex_event_cb;
+    conf->set("event_cb", &ex_event_cb, errstr);
+
+    // 创建 Kafka Consumer
+    RdKafka::KafkaConsumer *consumer = RdKafka::KafkaConsumer::create(conf, errstr);
+    if (!consumer) {
+        std::cerr << "Failed to create consumer: " << errstr << std::endl;
+        return 1;
+    }
+
+    std::cout << "Consumer created" << std::endl;
+
+    // 订阅 topic
+    std::vector<std::string> topics = {topic};
+    RdKafka::ErrorCode err = consumer->subscribe(topics);
+    if (err) {
+        std::cerr << "Failed to subscribe to topic: " << RdKafka::err2str(err) << std::endl;
+        return 1;
+    }
+
+    // 捕获 Ctrl+C
+    signal(SIGINT, signal_handler);
+
+    // 消费循环
+    while (run) {
+        RdKafka::Message *msg = consumer->consume(1000);  // timeout: 1000ms
+        switch (msg->err()) {
+            case RdKafka::ERR_NO_ERROR:
+                std::cout << "Received message: " << static_cast<const char *>(msg->payload()) << std::endl;
+                break;
+
+            case RdKafka::ERR__TIMED_OUT:
+                break;
+
+            case RdKafka::ERR__PARTITION_EOF:
+                // 忽略 EOF
+                break;
+
+            default:
+                std::cerr << "Consume error: " << msg->errstr() << std::endl;
+                run = false;
+                break;
+        }
+        delete msg;
+    }
+
+    consumer->close();
+    delete consumer;
+    delete conf;
+
+    RdKafka::wait_destroyed(5000);
+
+    std::cout << "Consumer closed." << std::endl;
+
+    return 0;
+}
+===================
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <string.h>
+#include <librdkafka/rdkafka.h>
+
+static int run = 1;
+
+static void stop(int sig) {
+    run = 0;
+}
+
+int main() {
+    const char *brokers = "localhost:9092";
+    const char *topic = "test";
+    const char *group_id = "c_consumer_group";
+
+    char errstr[512];
+
+    // 注册信号处理（Ctrl+C 退出）
+    signal(SIGINT, stop);
+
+    // 创建配置
+    rd_kafka_conf_t *conf = rd_kafka_conf_new();
+    rd_kafka_conf_set(conf, "bootstrap.servers", brokers, errstr, sizeof(errstr));
+    rd_kafka_conf_set(conf, "group.id", group_id, errstr, sizeof(errstr));
+    rd_kafka_conf_set(conf, "auto.offset.reset", "earliest", errstr, sizeof(errstr));
+
+    // 创建消费者实例
+    rd_kafka_t *rk = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr, sizeof(errstr));
+    if (!rk) {
+        fprintf(stderr, "%% Failed to create consumer: %s\n", errstr);
+        return 1;
+    }
+
+    // 订阅 topic
+    rd_kafka_topic_partition_list_t *topics = rd_kafka_topic_partition_list_new(1);
+    rd_kafka_topic_partition_list_add(topics, topic, -1);
+
+    if (rd_kafka_subscribe(rk, topics)) {
+        fprintf(stderr, "%% Failed to subscribe to topic\n");
+        return 1;
+    }
+
+    rd_kafka_topic_partition_list_destroy(topics);
+
+    // 消费循环
+    while (run) {
+        rd_kafka_message_t *msg = rd_kafka_consumer_poll(rk, 1000);
+        if (!msg) continue;
+
+        if (msg->err) {
+            if (msg->err == RD_KAFKA_RESP_ERR__PARTITION_EOF) {
+                // 分区消费完毕，不是错误
+            } else {
+                fprintf(stderr, "%% Error: %s\n", rd_kafka_message_errstr(msg));
+                run = 0;
+            }
+        } else {
+            printf("%% Received message: %.*s\n", (int)msg->len, (char *)msg->payload);
+        }
+
+        rd_kafka_message_destroy(msg);
+    }
+
+    // 关闭消费者
+    rd_kafka_consumer_close(rk);
+    rd_kafka_destroy(rk);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
