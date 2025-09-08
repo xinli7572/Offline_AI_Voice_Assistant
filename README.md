@@ -8,12 +8,15 @@ https://github.com/user-attachments/assets/8470d2bd-a5ef-403f-8369-0f5a830b5a53
 
 
 
-> 🎙️ This project is a prototype of an **offline AI voice assistant**, featuring three locally-deployed AI components:
+> Offline AI Voice Assistant is a prototype that integrates several locally-deployed AI components and enables cross-platform communication between Java and C++ using Apache Kafka for asynchronous interaction.
 > - **Speech Recognition (STT)** using Vosk,
 > - **Language Modeling (LLM)** using TinyLLaMA via llama.cpp,
 > - **Text-to-Speech (TTS)** using Piper.
-
-It also includes **Java-based Web and Android clients**, both communicating with the C++ backend through sockets.
+> -  **Java Clients**: Web and Android frontends
+> -  **C++ Backend**: High-performance local AI task handling
+> -  **Asynchronous Communication**  
+>    - Kafka used to **decouple Java clients and C++ backend**
+>    - Enables **real-time, asynchronous** data exchange between components
 
 ---
 
